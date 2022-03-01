@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  app-ruby:
+    build: .
+#    tty: true
+    volumes:
+      - ../public:/public
+    ports:
+      - 8000:8000
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=isucari
+      - MYSQL_PASS=isucari
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - ../sql:/docker-entrypoint-initdb.d
+      - ../sql/conf:/etc/mysql/conf.d
+#      - ./datadir:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=isucari
+      - MYSQL_USER=isucari
+      - MYSQL_PASSWORD=isucari
+    ports:
+      - 3306:3306
