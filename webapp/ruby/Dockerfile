@@ -6,4 +6,5 @@ RUN apt-get update \
 COPY . /app
 WORKDIR /app
 RUN bundle install
-ENTRYPOINT ["bundle", "exec", "rackup", "--port", "8000", "--host", "0.0.0.0"]
+ENTRYPOINT ["bundle", "exec", "rackup"]
+CMD ["--port", "8000", "--host", "0.0.0.0"]
