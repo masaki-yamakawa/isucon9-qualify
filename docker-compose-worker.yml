@@ -4,13 +4,17 @@ services:
   benchmarker:
     build: .
     hostname: benchmarker
+    networks:
+      default:
+        ipv4_address: 172.20.0.100
     volumes:
       - ./initial-data:/app/initial-data
       - ./webapp/public:/app/webapp/public
     ports:
       - 5555:5555
       - 7000:7000
-    command: "-target-url=http://app-ruby:8000 -payment-url=http://benchmarker:5555 -shipment-url=http://benchmarker:7000 -allowed-ips=172.20.0.10"
+    entrypoint: "/app/bin/benchmark-worker"
+    command: "-ep=http://portal:80"
 
 networks:
   default:
