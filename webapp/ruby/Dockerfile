@@ -1,8 +1,7 @@
 FROM ruby:2.7.1
 RUN apt-get update \
  && apt-get install -y \
-    mariadb-client \
-    less
+    mariadb-client
 COPY . /app
 WORKDIR /app
 RUN bundle install
