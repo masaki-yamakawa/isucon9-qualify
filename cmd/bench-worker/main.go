@@ -68,6 +68,8 @@ const (
 	maxNumMessage          = 20
 	maxBenchmarkTime       = 180 * time.Second
 	defaultBenchmarkerPath = "/home/isucon/isucari/bin/benchmarker"
+	defaultPaymentUrl      = "http://benchmarker:5555"
+	defaultShipmentUrl     = "http://benchmarker:7000"
 )
 
 var (
@@ -207,7 +209,7 @@ func getExternalServiceSuffix() (string, error) {
 	return strings.TrimPrefix(hostname, "bench"), nil
 }
 
-func runBenchmarker(benchmarkerPath string, job *Job) (*BenchmarkResult, error) {
+func runBenchmarker(benchmarkerPath string, paymentUrl string, shipmentUrl string, job *Job) (*BenchmarkResult, error) {
 	target, err := findBenchmarkTargetServer(job)
 	if err != nil {
 		return &BenchmarkResult{}, err
@@ -217,19 +219,19 @@ func runBenchmarker(benchmarkerPath string, job *Job) (*BenchmarkResult, error) 
 		allowedIPs = append(allowedIPs, server.GlobalIP)
 	}
 
-	suffix, err := getExternalServiceSuffix()
-	if err != nil {
-		return &BenchmarkResult{}, err
-	}
+//	suffix, err := getExternalServiceSuffix()
+//	if err != nil {
+//		return &BenchmarkResult{}, err
+//	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), maxBenchmarkTime)
 	defer cancel()
 	cmd := exec.CommandContext(
 		ctx,
 		benchmarkerPath,
-		fmt.Sprintf("-payment-url=https://%s", fmt.Sprintf("payment%s.isucon9q.catatsuy.org", suffix)),
-		fmt.Sprintf("-shipment-url=https://%s", fmt.Sprintf("shipment%s.isucon9q.catatsuy.org", suffix)),
-		fmt.Sprintf("-target-url=https://%s", target.GlobalIP),
+		fmt.Sprintf("-payment-url=%s", paymentUrl),
+		fmt.Sprintf("-shipment-url=%s", shipmentUrl),
+		fmt.Sprintf("-target-url=http://%s:8000", target.GlobalIP),
 		fmt.Sprintf("-allowed-ips=%s", strings.Join(allowedIPs, ",")),
 		fmt.Sprintf("-data-dir=/home/isucon/isucari/initial-data"),
 		fmt.Sprintf("-static-dir=/home/isucon/isucari/webapp/public/static"))
@@ -298,11 +300,15 @@ func main() {
 		apiEndpoint     string
 		interval        time.Duration
 		benchmarkerPath string
+		paymentUrl      string
+		shipmentUrl     string
 	)
 
 	flag.StringVar(&apiEndpoint, "ep", apiEndpointDev, "API Endpoint")
 	flag.DurationVar(&interval, "interval", defaultInterval, "Dequeuing interval second")
 	flag.StringVar(&benchmarkerPath, "benchmarker", defaultBenchmarkerPath, "Benchmarker path")
+	flag.StringVar(&paymentUrl, "payment-url", defaultPaymentUrl, "Payment URL")
+	flag.StringVar(&shipmentUrl, "shipment-url", defaultShipmentUrl, "Shipment URL")
 	flag.Parse()
 
 	ticker := time.NewTicker(interval)
@@ -320,7 +326,7 @@ func main() {
 		log.Println("============Benchmark job end======================")
 
 		log.Printf("Run benchmark")
-		benchmarkResult, err := runBenchmarker(benchmarkerPath, job)
+		benchmarkResult, err := runBenchmarker(benchmarkerPath, paymentUrl, shipmentUrl, job)
 		if err != nil {
 			log.Println("Run benchmark fail: ", err)
 		}
