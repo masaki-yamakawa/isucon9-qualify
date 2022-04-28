@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: app-go
+  name: app-go
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: app-go
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/isucon9-qualify-default: "true"
+        io.kompose.service: app-go
+    spec:
+      containers:
+        - env:
+            - name: MYSQL_HOST
+              value: db
+            - name: MYSQL_PASS
+              value: isucari
+            - name: MYSQL_USER
+              value: isucari
+          image: app-go:minikube
+          imagePullPolicy: Never
+          name: app-go
+          ports:
+            - containerPort: 8000
+          resources: {}
+          volumeMounts:
+            - mountPath: /public
+              name: app-go-path
+            - mountPath: /sql
+              name: app-go-path-db
+      hostname: app-go
+      restartPolicy: Always
+      volumes:
+        - name: app-go-path
+          hostPath:
+            path: /repository/webapp/public
+            type: Directory
+        - name: app-go-path-db
+          hostPath:
+            path: /repository/webapp/sql
+            type: Directory
+status: {}

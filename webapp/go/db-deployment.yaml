@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: db
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/isucon9-qualify-default: "true"
+        io.kompose.service: db
+    spec:
+      containers:
+        - env:
+            - name: MYSQL_DATABASE
+              value: isucari
+            - name: MYSQL_PASSWORD
+              value: isucari
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+            - name: MYSQL_USER
+              value: isucari
+          image: db:minikube
+          imagePullPolicy: Never
+          name: db
+          ports:
+            - containerPort: 3306
+          resources: {}
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              #name: db-claim0
+              name: db-path
+      restartPolicy: Always
+      volumes:
+        #- name: db-claim0
+        #  persistentVolumeClaim:
+        #    claimName: db-claim0
+        - name: db-path
+          hostPath:
+            path: /repository/webapp/sql
+            type: Directory
+status: {}
