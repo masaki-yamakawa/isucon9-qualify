@@ -8,13 +8,13 @@ services:
       default:
         ipv4_address: 172.20.0.100
     volumes:
-      - ./initial-data:/app/initial-data
-      - ./webapp/public:/app/webapp/public
+      - ./initial-data:/home/isucon/isucari/initial-data
+      - ./webapp/public:/home/isucon/isucari/webapp/public
     ports:
       - 5555:5555
       - 7000:7000
     entrypoint: "/app/bin/benchmark-worker"
-    command: "-ep=http://portal:80"
+    command: "-ep=http://portal:80 -benchmarker=/app/bin/benchmarker"
 
 networks:
   default:
