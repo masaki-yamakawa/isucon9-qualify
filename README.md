@@ -161,7 +161,8 @@ cd ../sql (webapp/sql)
 docker build -t db:minikube .
 
 # アプリケーション起動
- kubectl apply -f app-go-service.yaml,db-service.yaml,app-go-deployment.yaml,db-deployment.yaml,isucon9-qualify_default-networkpolicy.yaml
+cd webapp/go
+kubectl apply -f app-go-service.yaml,db-service.yaml,app-go-deployment.yaml,db-deployment.yaml,isucon9-qualify_default-networkpolicy.yaml
 
 # 別ターミナルでminikube tunnelを実行
 minikube tunnnel
