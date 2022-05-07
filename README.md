@@ -165,6 +165,9 @@ cd webapp/go
 kubectl apply -f app-go-service.yaml,db-service.yaml,app-go-deployment.yaml,db-deployment.yaml,isucon9-qualify_default-networkpolicy.yaml
 
 # 別ターミナルでminikube tunnelを実行
-minikube tunnnel
+minikube tunnel
+
+# または別ターミナルでポートフォワードを実行
+kubectl port-forward deployment/app-go 8000
 
 ```

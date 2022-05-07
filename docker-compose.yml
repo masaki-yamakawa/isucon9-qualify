@@ -11,6 +11,7 @@ services:
       - 5555:5555
       - 7000:7000
     command: "-target-url=http://172.20.0.10:8000 -payment-url=http://benchmarker:5555 -shipment-url=http://benchmarker:7000 -allowed-ips=172.20.0.10"
+#    command: "-target-url=http://host.docker.internal:8000 -payment-url=http://host.docker.internal:5555 -shipment-url=http://host.docker.internal:7000 -allowed-ips=172.20.0.1"
 
 networks:
   default:

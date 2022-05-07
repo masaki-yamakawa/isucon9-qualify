@@ -70,7 +70,7 @@ func (s *Server) withIPRestriction() Adapter {
 				}
 
 				if !passed {
-					b, _ := json.Marshal(errorRes{Error: "IP address is not allowed"})
+					b, _ := json.Marshal(errorRes{Error: fmt.Sprintf("IP address is not allowed:%s", ip)})
 
 					w.WriteHeader(http.StatusForbidden)
 					w.Write(b)
