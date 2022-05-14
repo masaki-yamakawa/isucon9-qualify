@@ -33,7 +33,7 @@ spec:
               value: isucari
             - name: MYSQL_USER
               value: isucari
-          image: app-go:minikube
+          image: app-go:1.0
           imagePullPolicy: Never
           name: app-go
           ports:

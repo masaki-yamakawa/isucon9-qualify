@@ -35,7 +35,7 @@ spec:
               value: root
             - name: MYSQL_USER
               value: isucari
-          image: db:minikube
+          image: db:1.0
           imagePullPolicy: Never
           name: db
           ports:
