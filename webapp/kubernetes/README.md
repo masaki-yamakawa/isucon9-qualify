@@ -1,16 +1,5 @@
 # isucon9-qualify for kubernetes
 
-## 前準備
-
-```shell-session
-# ISUCARIアプリケーションDockerイメージビルド
-$ cd webapp/${devlang}
-$ docker-compose build
-
-# Dockerイメージビルド結果確認
-$ docker images
-```
-
 ## minikube での起動方法
 
 ```shell-session
@@ -20,6 +9,13 @@ $ minikube start --mount --mount-string ${PWD}:/repository
 
 # docker endpointをminikubeに変更
 $ eval $(minikube docker-env)
+
+# ISUCARIアプリケーションDockerイメージビルド
+$ cd webapp/${devlang}
+$ docker-compose build
+
+# Dockerイメージビルド結果確認
+$ docker images
 
 # アプリケーション起動
 $ cd webapp/kubernetes
