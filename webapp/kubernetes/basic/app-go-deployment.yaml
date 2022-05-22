@@ -24,6 +24,12 @@ spec:
           volumeMounts:
             - name: static-contents
               mountPath: /public
+        - name: init-sql
+          image: alpine:3.15
+          command: ['sh', '-c', "wget --no-check-certificate https://github.com/masaki-yamakawa/isucon9-qualify/blob/uls/webapp/kubernetes/data/sql.tar.gz?raw=true -O /sql.tar.gz; tar zxvf /sql.tar.gz; rm -fr /sql.tar.gz; ls -ltr /sql"]
+          volumeMounts:
+            - name: init-sql
+              mountPath: /sql
       containers:
         - image: app-go:1.0
           name: app-go
@@ -45,5 +51,4 @@ spec:
         - name: static-contents
           emptyDir: {}
         - name: init-sql
-          configMap:
-            name: sql
+          emptyDir: {}
