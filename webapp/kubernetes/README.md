@@ -18,7 +18,7 @@ $ docker-compose build
 $ docker images
 
 # アプリケーション起動
-$ cd webapp/kubernetes
+$ cd webapp/kubernetes/${manifestdir}
 $ kubectl apply -f app-go-service.yaml,db-service.yaml,app-go-deployment.yaml,db-deployment.yaml,isucon9-qualify_default-networkpolicy.yaml
 
 # 別ターミナルでminikube tunnelを実行
