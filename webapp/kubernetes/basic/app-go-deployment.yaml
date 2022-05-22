@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-go
+  labels:
+    app: app-go
+spec:
+  selector:
+    matchLabels:
+      app: app-go
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: app-go
+        tier: frontend
+    spec:
+      initContainers:
+        - name: init-frontend
+          image: alpine:3.15
+          command: ['sh', '-c', "wget --no-check-certificate https://github.com/masaki-yamakawa/isucon9-qualify/blob/uls/webapp/kubernetes/data/frontend.tar.gz?raw=true -O /frontend.tar.gz; tar zxvf /frontend.tar.gz; rm -fr /frontend.tar.gz; ls -ltr /public"]
+          volumeMounts:
+            - name: static-contents
+              mountPath: /public
+      containers:
+        - image: app-go:1.0
+          name: app-go
+          env:
+            - name: MYSQL_HOST
+              value: db
+            - name: MYSQL_PASS
+              value: isucari
+            - name: MYSQL_USER
+              value: isucari
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: static-contents
+              mountPath: /public
+            - name: init-sql
+              mountPath: /sql
+      volumes:
+        - name: static-contents
+          emptyDir: {}
+        - name: init-sql
+          configMap:
+            name: sql

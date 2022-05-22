@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  labels:
+    app: isucon2
+spec:
+  selector:
+    matchLabels:
+      app: isucon2
+      tier: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: isucon2
+        tier: db
+    spec:
+      containers:
+        - image: db:1.0
+          name: db
+          env:
+            - name: MYSQL_DATABASE
+              value: isucari
+            - name: MYSQL_PASSWORD
+              value: isucari
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+            - name: MYSQL_USER
+              value: isucari
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: init-sql
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: init-sql
+          configMap:
+            name: sql
