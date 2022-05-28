@@ -51,9 +51,18 @@ $ cd webapp/kubernetes
 $ kubectl create configmap sql --from-file=sql
 $ kubectl get configmap sql -o yaml
 
+# PersistentVolume作成
+$ cd webapp/kubernetes/basic
+$ kubectl apply -f isucon2-pv-claim.yaml
+$ kubectl get pvc
+
 # アプリケーション起動
 $ cd webapp/kubernetes/basic
 $ kubectl apply -f app-go-service.yaml,db-service.yaml,app-go-deployment.yaml,db-deployment.yaml
+
+# 初期イメージ配置ジョブ実行
+$ cd webapp/kubernetes/basic
+$ kubectl apply -f init-images-job.yaml
 
 # 別ターミナルでminikube tunnelを実行
 $ minikube tunnel
