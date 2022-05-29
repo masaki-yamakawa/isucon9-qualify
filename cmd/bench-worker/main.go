@@ -232,7 +232,8 @@ func runBenchmarker(benchmarkerPath string, paymentUrl string, shipmentUrl strin
 		fmt.Sprintf("-payment-url=%s", paymentUrl),
 		fmt.Sprintf("-shipment-url=%s", shipmentUrl),
 		fmt.Sprintf("-target-url=http://%s:8000", target.GlobalIP),
-		fmt.Sprintf("-allowed-ips=%s", strings.Join(allowedIPs, ",")),
+//		fmt.Sprintf("-allowed-ips=%s", strings.Join(allowedIPs, ",")),
+		fmt.Sprintf("-allowed-ips=%s", "0.0.0.0"),
 		fmt.Sprintf("-data-dir=/home/isucon/isucari/initial-data"),
 		fmt.Sprintf("-static-dir=/home/isucon/isucari/webapp/public/static"))
 

@@ -61,9 +61,17 @@ func (s *Server) withIPRestriction() Adapter {
 					return
 				}
 
+				wildcardIp := net.ParseIP("0.0.0.0")
+				if wildcardIp == nil {
+					log.Fatalf("Cannot be parsed wildcard ip:%s", "0.0.0.0")
+				}
+
 				passed := false
 				for _, aIP := range s.allowedIPs {
-					if ip.Equal(aIP) {
+					if aIP.Equal(wildcardIp) {
+						passed = true
+						break
+					} else if ip.Equal(aIP) {
 						passed = true
 						break
 					}

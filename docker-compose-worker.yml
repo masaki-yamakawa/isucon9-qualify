@@ -14,7 +14,7 @@ services:
       - 5555:5555
       - 7000:7000
     entrypoint: "/app/bin/benchmark-worker"
-    command: "-ep=http://portal:80 -benchmarker=/app/bin/benchmarker"
+    command: "-ep=http://portal:80 -benchmarker=/app/bin/benchmarker -payment-url=http://benchmarker:5555 -shipment-url=http://benchmarker:7000"
 
 networks:
   default:
