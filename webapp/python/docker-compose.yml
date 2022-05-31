@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  app-python:
+    image: app-python:1.0
+    build: .
+    hostname: app-python
+    volumes:
+      - ../public:/public
+      - ../sql:/sql
+    ports:
+      - 8000:8000
+    networks:
+      default:
+        ipv4_address: 172.20.0.10
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=isucari
+      - MYSQL_PASS=isucari
+
+  db:
+    image: db:1.0
+    build: ../sql
+    volumes:
+      - ../sql:/docker-entrypoint-initdb.d
+#      - ./datadir:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=isucari
+      - MYSQL_USER=isucari
+      - MYSQL_PASSWORD=isucari
+    ports:
+      - 3306:3306
+
+networks:
+  default:
+    name: isucon9-qualify_default
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
