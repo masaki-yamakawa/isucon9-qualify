@@ -6,8 +6,8 @@ RUN apt-get update \
     locales locales-all
 RUN locale-gen ja_JP.UTF-8
 WORKDIR /app
-ADD requirements.txt /app/
+COPY requirements.txt /app/
 RUN pip install -r requirements.txt
-ADD . /app/
+COPY . /app/
 ENTRYPOINT ["gunicorn", "app:app"]
 CMD ["-w", "10", "-b", "0.0.0.0:8000"]

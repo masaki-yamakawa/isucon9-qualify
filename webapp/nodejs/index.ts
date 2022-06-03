@@ -293,7 +293,7 @@ async function getIndex(_req: any, reply: FastifyReply<ServerResponse>) {
 async function postInitialize(req: FastifyRequest, reply: FastifyReply<ServerResponse>) {
     const ri: ReqInitialize = req.body;
 
-    await execFile("../sql/init.sh");
+    await execFile("../sql/init.bash");
 
     const db = await getDBConnection();
 
@@ -2132,7 +2132,7 @@ async function getLoginUser(req: FastifyRequest, db: MySQLQueryable): Promise<Us
 function getSession(req: FastifyRequest) {
 }
 
-fastify.listen(8000, (err, _address) => {
+fastify.listen(8000, "0.0.0.0", (err, _address) => {
     if (err) {
         throw new TraceError("Failed to listening", err);
     }
