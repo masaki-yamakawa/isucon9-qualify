@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  payment:
+    build: .
+    hostname: payment
+    ports:
+      - 5555:5555
+    entrypoint: "/app/bin/payment"
+
+  shipment:
+    build: .
+    hostname: shipment
+    volumes:
+      - ./initial-data:/app/initial-data
+    ports:
+      - 7000:7000
+    entrypoint: "/app/bin/shipment"
+
+networks:
+  default:
+    name: isucon9-qualify_default
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
