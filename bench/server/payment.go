@@ -4,10 +4,13 @@ import (
 	crand "crypto/rand"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
+	"strconv"
 	"sync"
 	"time"
 
@@ -241,6 +244,15 @@ func (s *ServerPayment) tokenHandler(w http.ResponseWriter, req *http.Request) {
 		}
 
 		s.reports.Set(ct.itemID, ct.price)
+	}
+
+	delay := os.Getenv("API_DELAY")
+	if delay == "random" {
+		d := rand.Intn(500)
+		time.Sleep(time.Duration(d) * time.Millisecond)
+	} else if delay != "" {
+		d, _ := strconv.Atoi(delay)
+		time.Sleep(time.Duration(d) * time.Millisecond)
 	}
 
 	json.NewEncoder(w).Encode(result)

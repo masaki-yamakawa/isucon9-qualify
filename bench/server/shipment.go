@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 
@@ -337,6 +338,15 @@ func (s *ServerShipment) requestHandler(w http.ResponseWriter, r *http.Request) 
 
 		w.WriteHeader(http.StatusInternalServerError)
 		return
+	}
+
+	delay := os.Getenv("API_DELAY")
+	if delay == "random" {
+		d := rand.Intn(500)
+		time.Sleep(time.Duration(d) * time.Millisecond)
+	} else if delay != "" {
+		d, _ := strconv.Atoi(delay)
+		time.Sleep(time.Duration(d) * time.Millisecond)
 	}
 
 	h := md5.New()
