@@ -17,11 +17,11 @@ import (
 
 const (
 	MinCampaignRateSetting = 0
-	MaxCampaignRateSetting = 4
+	MaxCampaignRateSetting = 100
 	loadIDsMaxloop         = 100
 )
 
-func getCampaign() (int) {
+func getCampaignRate(input int) (int) {
 	t := time.Now()
 	campaignHM := os.Getenv(fmt.Sprintf("CAMPAIGN_%02d%1d0", t.Hour(), t.Minute() / 10))
 	campaignH := os.Getenv(fmt.Sprintf("CAMPAIGN_%02d00", t.Hour()))
@@ -34,8 +34,12 @@ func getCampaign() (int) {
 		campaign, _ := strconv.Atoi(campaignH)
 		return campaign
 	}
+	enforceDefaultCampaignValue := os.Getenv("ENFORCE_DEFAULT_CAMPAIGN_VALUE")
+	if enforceDefaultCampaignValue == "true" {
+		return 0
+	}
 
-	return 0
+	return input
 }
 
 func initialize(ctx context.Context, paymentServiceURL, shipmentServiceURL string) (int, string, error) {
@@ -48,7 +52,7 @@ func initialize(ctx context.Context, paymentServiceURL, shipmentServiceURL strin
 		return 0, "", err
 	}
 	fmt.Sprintf("Returned campaign rate=%d", campaign)
-	cmpn := getCampaign()
+	cmpn := getCampaignRate(campaign)
 	if cmpn < MinCampaignRateSetting || cmpn > MaxCampaignRateSetting {
 		return 0, "", failure.New(fails.ErrApplication, failure.Messagef("POST /initialize の還元率の設定値は %d以上 %d以下です", MinCampaignRateSetting, MaxCampaignRateSetting))
 	}
