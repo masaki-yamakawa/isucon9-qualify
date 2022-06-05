@@ -1,143 +1,146 @@
-# isucon9-qualify
+# uls-isucon2
 
 ## ディレクトリ構成
 
 ```
 ├── bench        # ベンチマーカーなどが依存するパッケージのソースコード
 ├── cmd          # ベンチマーカーなどのソースコード
-├── docs         # 運営が用意した各種ドキュメント
 ├── initial-data # 初期データ作成
-├── provisioning # セットアップ用ansible
 └── webapp       # 各言語の参考実装
 ```
 
-## アプリケーションおよびベンチマーカーの起動方法
+## ISUCARIストーリー
 
-こちらのblogでも紹介しています。参考にしてください
-http://isucon.net/archives/53805209.html
+ISUCARIは椅子を売りたい人／買いたい人をつなげるフリマアプリです。
 
+- 日々開発が進められ、先日もBump機能がリリースされたばかり
+- 世界的な椅子ブームを追い風に順調に成長を続け
+- さらなる成長を見込み社長は自腹による「ｲｽｺｲﾝ還元キャンペーン」を企画
+- しかし「ｲｽｺｲﾝ還元キャンペーン」の驚異的な拡散力により負荷に耐えられないことが発覚
+- 社長「緊急メンテナンスをいれていいので18時までに改修しろ。18時にプロモーション開始だ」
 
-## 前準備
+アプリケーションの仕様については [アプリケーション仕様書](./webapp/docs/APPLICATION_SPEC.md) を参照
+
+![image](./docs/overview.png)
+
+## クイックスタート（ISUCARをブラウザで使うなら編）
+
+Dockerを使用して簡単にアプリケーションのビルド、起動が可能です。
+シンボリックリンクがあるため、Windowsの場合はWSL2を使用してください。
+
+### 前準備
 
 ```
 # 初期データ作成
 $ cd initial-data
 $ make
 
-# 初期画像データダウンロード
-
+# webapp用初期画像データダウンロード
+# GitHub releases から initial.zip をダウンロードしてwebapp/public/upload配下に展開
 $ cd webapp/public
-# GitHub releases から initial.zip をダウンロード
+$ wget --no-check-certificate https://github.com/isucon/isucon9-qualify/releases/download/v2/initial.zip
 $ unzip initial.zip
 $ rm -rf upload
 $ mv v3_initial_data upload
+```
 
-# ベンチマーク用画像データダウンロード
+### ISUCARIビルド＆起動
 
+```
+# Dockerイメージ作成
+$ cd webapp/go or webapp/python or webapp/nodejs
+$ docker-compose build
+
+# Dockerイメージ作成確認
+# app-go/app-python/app-nodejsとdbというイメージがv1.0で作成される（dbはwebapp/sql配下のDockerfile）
+$ docker images
+
+# ISUCARI起動
+$ docker-compose up -d
+
+# ISUCARI起動確認
+$ docker ps
+
+# ISUCARI停止（停止が必要なら）
+$ docker-compose down
+```
+
+### 外部サービスビルド＆起動
+
+ISUCARIは2つの外部サービスに依存しています。
+この2つのサービスをビルドして起動します。
+
+```
+# Dockerイメージ作成
+$ cd ${repository root directory}
+$ docker-compose -f docker-compose-external.yml build
+
+# Dockerイメージ作成確認
+# ${reposName}_paymentと${reposName}_shipmentdbというイメージがlatestで作成される
+$ docker images
+
+# 外部サービス起動
+$ docker-compose -f docker-compose-external.yml up -d
+
+# 外部サービス起動確認
+$ docker ps
+
+# 外部サービス停止
+$ docker-compose -f docker-compose-external.yml down
+```
+
+### ISUCARI動作確認
+
+ブラウザから以下のURLにアクセスするとアプリが表示されます。
+
+http://localhost:8000/
+
+画面の「新規会員登録」から、ユーザを作成あるいは以下のテスト用ユーザが利用できます
+
+| id       | password |
+|----------|----------|
+| isudemo1 | isudemo1 |
+| isudemo2 | isudemo2 |
+| isudemo3 | isudemo3 |
+
+
+
+## クイックスタート（ベンチマーク実行編）
+
+Dockerを使用して簡単にベンチマーク実行が可能です。
+クイックスタート（ISUCARをブラウザで使うなら編）を完了させISUCARが起動済みであることが前提です。
+また、ベンチマーカーが外部サービスを自動的に起動するため、外部サービスは停止してください。
+
+### 前準備
+
+```
+# ベンチマーカー用画像データダウンロード
+# GitHub releases から bench1.zip をダウンロードしてinitial-data/images配下に展開
 $ cd initial-data
-# GitHub releases から bench1.zip をダウンロード
+$ wget --no-check-certificate https://github.com/isucon/isucon9-qualify/releases/download/v2/bench1.zip
 $ unzip bench1.zip
 $ rm -rf images
 $ mv v3_bench1 images
-
-$ make
-$ ./bin/benchmarker
 ```
 
-## ベンチマーカー
-
-Version: Go 1.13 or later
-
-### 実行オプション
+### ベンチマーカービルド＆起動
 
 ```
-$ ./bin/benchmarker -help
-Usage of isucon9q:
-  -allowed-ips string
-        allowed ips (comma separated)
-  -data-dir string
-        data directory (default "initial-data")
-  -payment-port int
-        payment service port (default 5555)
-  -payment-url string
-        payment url (default "http://localhost:5555")
-  -shipment-port int
-        shipment service port (default 7000)
-  -shipment-url string
-        shipment url (default "http://localhost:7000")
-  -static-dir string
-        static file directory (default "webapp/public/static")
-  -target-host string
-        target host (default "isucon9.catatsuy.org")
-  -target-url string
-        target url (default "http://127.0.0.1:8000")
+# Dockerイメージ作成
+$ cd ${repository root directory}
+$ docker-compose build
+
+# Dockerイメージ作成確認
+# ${reposName}_benchmarkerというイメージがlatestで作成される
+$ docker images
+
+# ベンチマーカー起動
+$ docker-compose up
 ```
 
-  * HTTPとHTTPSに両対応
-    * 証明書を検証するのでHTTPSは面倒
-  * 外部サービス2つを自前で起動するので、いい感じにするならnginxを立てている必要がある
-  * nginxでいい感じにするなら以下の設定が必須
-    * `proxy_set_header Host $http_host;`
-      * shipmentのみ必須
-    * `proxy_set_header X-Forwarded-Proto "https";`
-      * HTTPSでないなら不要
-    * `proxy_set_header True-Client-IP $remote_addr;`
-    * cf: https://github.com/isucon/isucon9-qualify/tree/master/provisioning/roles/external.nginx/files/etc/nginx
+## ULS杯ISUCON#2マニュアル
 
-
-## 外部サービス
-
-### 実行オプション
-
-```
-$ ./bin/shipment -help
-Usage of shipment:
-  -data-dir string
-        data directory (default "initial-data")
-```
-
-`payment`はオプションなし。
-
-### 注意点
-
-nginxでいい感じにするなら以下の設定が必須
-
-  * `proxy_set_header Host $http_host;`
-    * shipmentのみ必須
-  * `proxy_set_header X-Forwarded-Proto "https";`
-    * HTTPSでないなら不要
-
-## webapp 起動方法
-
-```shell-session
-cd webapp/sql
-
-# databaseとuserを初期化する
-mysql -u root < 00_create_database.sql
-
-# データを流し込む
-./init.sh
-
-cd webapp/go
-make
-./isucari
-```
-
-## 運営側のブログ
-
-技術情報などについても記載されているので参考にしてください。
-
-  * ISUCON9予選の出題と外部サービス・ベンチマーカーについて - catatsuy - Medium https://medium.com/@catatsuy/isucon9-qualify-969c3abdf011
-  * ISUCONのベンチマーカーとGo https://gist.github.com/catatsuy/74cd66e9ff69d7da0ff3311e9dcd81fa
-  * ISUCON9予選でフロントエンド周りの実装を担当した話 - はらへり日記 https://sota1235.hatenablog.com/entry/2019/10/07/110500
-
-## サポートするMySQLのバージョン
-
-MySQL 5.7および8.0にて動作確認しています。
-
-ただし、nodejsでアプケーションを起動する場合、MySQL 8.0の認証方式によっては動作しないことがあります。
-詳しくは、 https://github.com/isucon/isucon9-qualify/pull/316 を参考にしてください
-
+[ULS杯ISUCON#2マニュアル](./docs/manual.md)
 
 ## 使用データの取得元
 

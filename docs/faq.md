@@ -27,9 +27,6 @@ fastify.get("/users/setting", getIndex);
 Q. serversタブでサーバ名を追加できません  
 A. ポータルの仕様でサーバ名にunique制約がかかっているため、他のチームと被る可能性の低いサーバ名の設定をお願いします
 
-Q. 価格モデルの設定をサブスクリプションにしたため、isucon-instance-checker実行時に価格モデルが従量課金(Pay-As-You-Go)でないためにエラーが出るが失格対象となるか  
-A. 価格モデルの設定に関してはスコアに影響しないため、従量課金(Pay-As-You-Go)でなくても失格対象とはなりません
-
 Q. Ruby実装に誤りがあります  
 A. `ruby/lib/isucari/web.rb`に以下の差分を当ててください
 
