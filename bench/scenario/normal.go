@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"os"
+	"strconv"
 	"sync"
+	"time"
 
 	"github.com/isucon/isucon9-qualify/bench/asset"
 	"github.com/isucon/isucon9-qualify/bench/fails"
@@ -18,6 +21,23 @@ const (
 	loadIDsMaxloop         = 100
 )
 
+func getCampaign() (int) {
+	t := time.Now()
+	campaignHM := os.Getenv(fmt.Sprintf("CAMPAIGN_%02d%1d0", t.Hour(), t.Minute() / 10))
+	campaignH := os.Getenv(fmt.Sprintf("CAMPAIGN_%02d00", t.Hour()))
+
+	if campaignHM != "" {
+		campaign, _ := strconv.Atoi(campaignHM)
+		return campaign
+	}
+	if campaignH != "" {
+		campaign, _ := strconv.Atoi(campaignH)
+		return campaign
+	}
+
+	return 0
+}
+
 func initialize(ctx context.Context, paymentServiceURL, shipmentServiceURL string) (int, string, error) {
 	s1, err := session.NewSessionForInialize()
 	if err != nil {
@@ -27,7 +47,9 @@ func initialize(ctx context.Context, paymentServiceURL, shipmentServiceURL strin
 	if err != nil {
 		return 0, "", err
 	}
-	if campaign < MinCampaignRateSetting || campaign > MaxCampaignRateSetting {
+	fmt.Sprintf("Returned campaign rate=%d", campaign)
+	cmpn := getCampaign()
+	if cmpn < MinCampaignRateSetting || cmpn > MaxCampaignRateSetting {
 		return 0, "", failure.New(fails.ErrApplication, failure.Messagef("POST /initialize の還元率の設定値は %d以上 %d以下です", MinCampaignRateSetting, MaxCampaignRateSetting))
 	}
 
@@ -35,7 +57,7 @@ func initialize(ctx context.Context, paymentServiceURL, shipmentServiceURL strin
 		return 0, "", failure.New(fails.ErrApplication, failure.Message("POST /initialize では実装言語を返す必要があります"))
 	}
 
-	return campaign, language, nil
+	return cmpn, language, nil
 }
 
 func checkItemSimpleCategory(item session.ItemSimple, aItem asset.AppItem) error {

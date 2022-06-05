@@ -15,6 +15,9 @@ services:
       - 7000:7000
     entrypoint: "/app/bin/benchmark-worker"
     command: "-ep=http://portal:80 -benchmarker=/app/bin/benchmarker -payment-url=http://benchmarker:5555 -shipment-url=http://benchmarker:7000"
+    environment:
+      - CAMPAIGN_1000=2
+      - CAMPAIGN_1130=3
 
 networks:
   default:

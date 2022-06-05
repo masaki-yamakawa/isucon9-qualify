@@ -1,5 +1,7 @@
 FROM golang:1.17.7-buster
 
+ENV TZ=Asia/Tokyo
+
 RUN mkdir -p /app/bin
 COPY ./cmd /app/cmd
 COPY ./bench /app/bench
