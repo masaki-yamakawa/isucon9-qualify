@@ -31,11 +31,11 @@ Dockerを使用して簡単にアプリケーションのビルド、起動が�
 ### 前準備
 
 ```
-# 初期データ作成
+# 初期データ作成（10分程度時間がかかります）
 $ cd initial-data
 $ make
 
-# webapp用初期画像データダウンロード
+# webapp用初期画像データダウンロード（10分程度時間がかかります）
 # GitHub releases から initial.zip をダウンロードしてwebapp/public/upload配下に展開
 $ cd webapp/public
 $ wget --no-check-certificate https://github.com/isucon/isucon9-qualify/releases/download/v2/initial.zip
@@ -85,8 +85,12 @@ $ docker-compose -f docker-compose-external.yml up -d
 # 外部サービス起動確認
 $ docker ps
 
-# 外部サービス停止
+# ISUCARIの外部サービス接続先を変更
+$ curl -XPOST http://127.0.0.1:8000/initialize -d '{"payment_service_url":"http://payment:5555", "shipment_service_url":"http://shipment:7000"}'
+
+# 外部サービス停止（停止が必要なら）
 $ docker-compose -f docker-compose-external.yml down
+※network削除エラーは問題ありません
 ```
 
 ### ISUCARI動作確認
@@ -114,7 +118,7 @@ Dockerを使用して簡単にベンチマーク実行が可能です。
 ### 前準備
 
 ```
-# ベンチマーカー用画像データダウンロード
+# ベンチマーカー用画像データダウンロード（10分程度時間がかかります）
 # GitHub releases から bench1.zip をダウンロードしてinitial-data/images配下に展開
 $ cd initial-data
 $ wget --no-check-certificate https://github.com/isucon/isucon9-qualify/releases/download/v2/bench1.zip
